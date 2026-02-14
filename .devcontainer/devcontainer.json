@@ -4,14 +4,7 @@
   "service": "myapp",
   "workspaceFolder": "/var/www/html/lang-note",
   "remoteUser": "dev",
-  "mounts": [
-    // Forward SSH agent socket from host to container
-    // This enables git push via SSH from inside the container
-    "source=${localEnv:SSH_AUTH_SOCK},target=/ssh-agent,type=bind,consistency=cached"
-  ],
   "remoteEnv": {
-    // Point to the forwarded SSH agent socket
-    "SSH_AUTH_SOCK": "/ssh-agent",
     "COMPOSER_ALLOW_SUPERUSER": "1"
   },
   "features": {
@@ -130,5 +123,6 @@
     }
   },
   "postCreateCommand": "composer install && npm install && sudo chown -R dev:dev /var/www/html/lang-note && git config --global --add safe.directory /var/www/html/lang-note",
-  "postStartCommand": "sudo chown -R dev:dev /var/www/html/lang-note"
+  "postStartCommand": "sudo chown -R dev:dev /var/www/html/lang-note",
+  "initializeCommand": "ssh-add -l > /dev/null 2>&1 || (echo '❌ SSH keys not loaded on WSL2!' && echo 'Run: source ~/.bashrc && ssh-add -l' && exit 0)"
 }
