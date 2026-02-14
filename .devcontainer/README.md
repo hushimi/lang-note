@@ -27,7 +27,7 @@ This devcontainer uses **automatic SSH agent forwarding** from the WSL2 host.
    ```bash
    ssh -T git@github.com
    ```
-   
+
    Expected output: `Hi username! You've successfully authenticated...`
 
 ### How It Works

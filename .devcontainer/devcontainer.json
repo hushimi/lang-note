@@ -4,10 +4,6 @@
   "service": "myapp",
   "workspaceFolder": "/var/www/html/lang-note",
   "remoteUser": "dev",
-  "mounts": [
-    // SSH agent forwarding is automatic - no manual mount needed
-    // See: https://code.visualstudio.com/remote/advancedcontainers/sharing-git-credentials
-  ],
   "features": {
     "ghcr.io/devcontainers/features/git:1": {},
     "ghcr.io/devcontainers/features/sshd:1": {
@@ -123,8 +119,8 @@
       }
     }
   },
-  "postCreateCommand": "composer install && npm install && npm run generate-types && sudo chown -R dev:dev /var/www/html/lang-note",
-  "postStartCommand": "sudo chown -R dev:dev /var/www/html/lang-note && git config --global --add safe.directory /var/www/html/lang-note",
+  "postCreateCommand": "composer install && npm install && npm run generate-types && sudo chown -R dev:dev /var/www/html/lang-note && git config --global --add safe.directory /var/www/html/lang-note",
+  "postStartCommand": "sudo chown -R dev:dev /var/www/html/lang-note && if [ -d ~/.ssh ]; then chmod 700 ~/.ssh && chmod 600 ~/.ssh/* 2>/dev/null || true; fi",
   "remoteEnv": {
     "COMPOSER_ALLOW_SUPERUSER": "1"
   }
