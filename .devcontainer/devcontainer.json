@@ -1,0 +1,124 @@
+{
+  "name": "Lang Note - Laravel + React",
+  "dockerComposeFile": "../../../docker-compose.yml",
+  "service": "myapp",
+  "workspaceFolder": "/var/www/html/lang-note",
+  "remoteUser": "dev",
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+  "forwardPorts": [8000, 5173, 3306, 8025, 1025],
+  "portsAttributes": {
+    "8000": {
+      "label": "Apache (Laravel)",
+      "onAutoForward": "notify"
+    },
+    "5173": {
+      "label": "Vite Dev Server",
+      "onAutoForward": "notify"
+    },
+    "3306": {
+      "label": "MySQL Database",
+      "onAutoForward": "silent"
+    },
+    "8025": {
+      "label": "MailHog Web UI",
+      "onAutoForward": "silent"
+    },
+    "1025": {
+      "label": "MailHog SMTP",
+      "onAutoForward": "silent"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "bmewburn.vscode-intelephense-client",
+        "MehediDracula.php-namespace-resolver",
+        "amiralizadeh9480.laravel-extra-intellisense",
+        "onecentlin.laravel-blade",
+        "onecentlin.laravel5-snippets",
+        "shufo.vscode-blade-formatter",
+        "open-southeners.laravel-pint",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "dsznajder.es7-react-js-snippets",
+        "styled-components.vscode-styled-components",
+        "yoavbls.pretty-ts-errors",
+        "formulahendry.auto-rename-tag",
+        "naumovs.color-highlight",
+        "pranaygp.vscode-css-peek",
+        "eamodio.gitlens",
+        "usernamehw.errorlens",
+        "christian-kohler.path-intellisense",
+        "wayou.vscode-todo-highlight"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": null,
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit",
+          "source.organizeImports": "never"
+        },
+        "php.suggest.basic": false,
+        "intelephense.files.maxSize": 5000000,
+        "blade.format.enable": true,
+        "[blade]": {
+          "editor.defaultFormatter": "shufo.vscode-blade-formatter"
+        },
+        "[php]": {
+          "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
+        },
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[typescriptreact]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[javascript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[json]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[css]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "tailwindCSS.experimental.classRegex": [
+          [
+            "cn\\(([^)]*)\\)",
+            "[\\'\\\"\\`]([^\\'\\'\\\"\\`]*).*?[\\'\\\"\\`]"
+          ]
+        ],
+        "tailwindCSS.includeLanguages": {
+          "typescript": "javascript",
+          "typescriptreact": "javascript"
+        },
+        "eslint.validate": [
+          "javascript",
+          "javascriptreact",
+          "typescript",
+          "typescriptreact"
+        ],
+        "prettier.enable": true,
+        "typescript.tsdk": "node_modules/typescript/lib",
+        "files.associations": {
+          "*.blade.php": "blade",
+          "*.css": "tailwindcss"
+        },
+        "emmet.includeLanguages": {
+          "blade": "html",
+          "javascript": "javascriptreact",
+          "typescript": "typescriptreact"
+        },
+        "blade-formatter.format.indentSize": 2
+      }
+    }
+  },
+  "postCreateCommand": "composer install && npm install && npm run generate-types && sudo chown -R dev:dev /var/www/html/lang-note",
+  "postStartCommand": "sudo chown -R dev:dev /var/www/html/lang-note",
+  "remoteEnv": {
+    "COMPOSER_ALLOW_SUPERUSER": "1"
+  }
+}

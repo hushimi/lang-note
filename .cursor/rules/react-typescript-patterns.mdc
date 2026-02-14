@@ -1,0 +1,756 @@
+---
+description: React and TypeScript patterns for InertiaJS frontend
+globs: resources/js/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# React/TypeScript Frontend Patterns
+
+This project uses React 19 with TypeScript, InertiaJS, Tailwind CSS, and Shadcn/ui.
+
+## Tech Stack
+
+- **React 19** - Functional components only
+- **TypeScript** - Strict mode enabled
+- **InertiaJS** - Modern monolith, no separate API
+- **Tailwind CSS** - Utility-first CSS
+- **Shadcn/ui** - Component library
+- **FontAwesome** - Icon library
+- **Vite** - Build tool with HMR
+
+## Code Formatting
+
+- **Indentation**: 2 spaces
+- **Line width**: 100 characters max
+- **Quotes**: Single quotes
+- **Semicolons**: Required
+
+## Component Architecture
+
+### Page Components (resources/js/Pages/)
+
+Page components are InertiaJS pages rendered from Laravel controllers:
+
+```typescript
+// ✅ GOOD - Page component with proper types
+import { PageProps } from '@/types';
+import { UserData, PostData } from '@/types/generated';
+
+interface DashboardProps extends PageProps {
+  posts: PostData[];
+}
+
+export default function Dashboard({ auth, posts }: DashboardProps) {
+  return (
+    <div>
+      <h1>Welcome, {auth.user?.name}</h1>
+      {posts.map((post) => (
+        <div key={post.id}>{post.title}</div>
+      ))}
+    </div>
+  );
+}
+
+// ❌ BAD - Missing types, not extending PageProps
+export default function Dashboard({ auth, posts }: any) {
+  return <div>Content</div>;
+}
+```
+
+### UI Components (resources/js/Components/ui/)
+
+Use Shadcn/ui components for UI primitives:
+
+```typescript
+// ✅ GOOD - Use existing Shadcn/ui components
+import { Button } from '@/Components/ui/button';
+import { Card, CardHeader, CardTitle, CardContent } from '@/Components/ui/card';
+
+<Button variant="outline" size="lg">Click Me</Button>
+<Card>
+  <CardHeader>
+    <CardTitle>Title</CardTitle>
+  </CardHeader>
+  <CardContent>Content here</CardContent>
+</Card>
+
+// ❌ BAD - Create custom buttons instead of using Shadcn
+<button className="rounded-md px-4 py-2 bg-blue-500">Click Me</button>
+```
+
+### Shared Components (resources/js/Components/)
+
+Create app-specific reusable components here:
+
+```typescript
+// ✅ GOOD - Reusable component with proper types
+interface UserAvatarProps {
+  user: UserData;
+  size?: 'sm' | 'md' | 'lg';
+}
+
+export function UserAvatar({ user, size = 'md' }: UserAvatarProps) {
+  return (
+    <img
+      src={user.avatar || '/default-avatar.png'}
+      alt={user.name}
+      className={cn(
+        'rounded-full',
+        size === 'sm' && 'h-8 w-8',
+        size === 'md' && 'h-12 w-12',
+        size === 'lg' && 'h-16 w-16'
+      )}
+    />
+  );
+}
+```
+
+## InertiaJS Patterns
+
+### Navigation
+
+Always use InertiaJS router, never regular links:
+
+```typescript
+// ✅ GOOD - InertiaJS navigation
+import { Link, router } from '@inertiajs/react';
+
+// For links
+<Link href="/dashboard" className="text-blue-500">Dashboard</Link>
+
+// For programmatic navigation
+router.visit('/posts');
+router.get('/posts/1');
+router.post('/posts', formData);
+router.delete('/posts/1');
+
+// With callbacks
+router.post('/posts', data, {
+  onSuccess: () => console.log('Success!'),
+  onError: (errors) => console.error(errors),
+});
+
+// ❌ BAD - Regular links or window.location
+<a href="/dashboard">Dashboard</a>
+window.location.href = '/posts';
+fetch('/api/posts').then(...);
+```
+
+### Form Handling
+
+Use InertiaJS form handling:
+
+```typescript
+// ✅ GOOD - InertiaJS form handling
+import { useForm } from '@inertiajs/react';
+
+const { data, setData, post, processing, errors } = useForm({
+  title: '',
+  content: '',
+});
+
+const handleSubmit = (e: React.FormEvent) => {
+  e.preventDefault();
+  post('/posts');
+};
+
+<form onSubmit={handleSubmit}>
+  <input
+    value={data.title}
+    onChange={(e) => setData('title', e.target.value)}
+  />
+  {errors.title && <span>{errors.title}</span>}
+  <button disabled={processing}>Submit</button>
+</form>
+
+// ❌ BAD - Manual form submission
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  const response = await fetch('/posts', {
+    method: 'POST',
+    body: JSON.stringify(formData),
+  });
+};
+```
+
+### Receiving Props
+
+All page components receive PageProps:
+
+```typescript
+// ✅ GOOD - Extend PageProps for additional props
+import { PageProps } from '@/types';
+
+interface ShowProps extends PageProps {
+  post: PostData;
+  comments: CommentData[];
+}
+
+export default function Show({ auth, post, comments }: ShowProps) {
+  // auth.user is available via PageProps
+  return <div>{post.title}</div>;
+}
+
+// ❌ BAD - Not using PageProps
+export default function Show(props: any) {
+  return <div>{props.post.title}</div>;
+}
+```
+
+## Type Safety
+
+### Use Generated Types
+
+Always import types generated from PHP Data classes:
+
+```typescript
+// ✅ GOOD - Use generated types from PHP
+import { UserData, PostData } from '@/types/generated';
+
+interface Props extends PageProps {
+  post: PostData;
+  author: UserData;
+}
+
+// ❌ BAD - Manually define types that exist in backend
+interface Props extends PageProps {
+  post: {
+    id: number;
+    title: string;
+    content: string;
+  };
+}
+```
+
+### Type All Props and State
+
+```typescript
+// ✅ GOOD - Properly typed
+interface PostCardProps {
+  post: PostData;
+  onDelete?: (id: number) => void;
+}
+
+const [isLoading, setIsLoading] = useState<boolean>(false);
+
+// ❌ BAD - Implicit any
+const [isLoading, setIsLoading] = useState();
+function PostCard({ post, onDelete }) {
+  return <div>{post.title}</div>;
+}
+```
+
+### Avoid 'any' Type
+
+```typescript
+// ✅ GOOD - Specific types
+const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  console.log(event.currentTarget);
+};
+
+// ❌ BAD - Using any
+const handleClick = (event: any) => {
+  console.log(event.currentTarget);
+};
+```
+
+## Tailwind CSS Patterns
+
+### Use Utility Classes
+
+```typescript
+// ✅ GOOD - Tailwind utilities
+<div className="flex items-center justify-between rounded-lg bg-white p-4 shadow-md">
+  <h2 className="text-xl font-bold">Title</h2>
+</div>
+
+// ❌ BAD - Inline styles
+<div style={{
+  display: 'flex',
+  padding: '1rem',
+  backgroundColor: 'white'
+}}>
+  <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>Title</h2>
+</div>
+```
+
+### Conditional Classes with cn()
+
+```typescript
+// ✅ GOOD - Use cn() utility for conditional classes
+import { cn } from '@/lib/utils';
+
+<Button
+  className={cn(
+    'w-full',
+    isActive && 'bg-primary',
+    isDisabled && 'opacity-50 cursor-not-allowed'
+  )}
+/>
+
+// ❌ BAD - String concatenation or template literals
+<Button
+  className={`w-full ${isActive ? 'bg-primary' : ''} ${isDisabled ? 'opacity-50' : ''}`}
+/>
+```
+
+### Responsive Design
+
+```typescript
+// ✅ GOOD - Mobile-first responsive design
+<div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+  {items.map(item => <Card key={item.id} />)}
+</div>
+
+// ✅ GOOD - Responsive text and spacing
+<h1 className="text-2xl font-bold md:text-3xl lg:text-4xl">Title</h1>
+<div className="space-y-4 p-4 md:p-6 lg:p-8">Content</div>
+```
+
+## Shadcn/ui Components
+
+### Use Existing Components
+
+Prefer Shadcn/ui over custom components:
+
+```typescript
+// ✅ GOOD - Use Shadcn/ui Button
+import { Button } from '@/Components/ui/button';
+
+<Button variant="outline" size="lg">
+  Click Me
+</Button>
+
+// ✅ GOOD - Use Shadcn/ui Card
+import { Card, CardHeader, CardTitle, CardContent } from '@/Components/ui/card';
+
+<Card>
+  <CardHeader>
+    <CardTitle>Post Title</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <p>Post content here</p>
+  </CardContent>
+</Card>
+
+// ❌ BAD - Custom button when Shadcn exists
+<button className="rounded-md bg-gray-100 px-4 py-2 hover:bg-gray-200">
+  Click Me
+</button>
+```
+
+### Component Props
+
+Respect Shadcn/ui component APIs:
+
+```typescript
+// ✅ GOOD - Use variant props
+<Button variant="default">Primary</Button>
+<Button variant="outline">Secondary</Button>
+<Button variant="ghost">Tertiary</Button>
+
+// ✅ GOOD - Use size props
+<Button size="sm">Small</Button>
+<Button size="default">Default</Button>
+<Button size="lg">Large</Button>
+```
+
+## FontAwesome Icons
+
+### Import Specific Icons
+
+```typescript
+// ✅ GOOD - Import specific icons from correct packages
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGoogle, faGithub } from '@fortawesome/free-brands-svg-icons';
+import { faUser, faSignOutAlt, faBook } from '@fortawesome/free-solid-svg-icons';
+import { faHeart } from '@fortawesome/free-regular-svg-icons';
+
+<FontAwesomeIcon icon={faGoogle} className="mr-2 h-5 w-5" />
+
+// ❌ BAD - Class-based icons or undefined imports
+<i className="fa fa-google mr-2"></i>
+<FontAwesomeIcon icon="google" />
+```
+
+## State Management
+
+### UI State Only
+
+Use React state only for UI state, not server data:
+
+```typescript
+// ✅ GOOD - UI state
+const [isModalOpen, setIsModalOpen] = useState(false);
+const [selectedTab, setSelectedTab] = useState('overview');
+
+// ✅ GOOD - Server data comes from props
+export default function Posts({ auth, posts }: PostsProps) {
+  return <div>{posts.map(...)}</div>;
+}
+
+// ❌ BAD - Fetching and storing server data in state
+const [posts, setPosts] = useState<PostData[]>([]);
+
+useEffect(() => {
+  fetch('/api/posts')
+    .then(r => r.json())
+    .then(data => setPosts(data));
+}, []);
+```
+
+### Form State
+
+Use InertiaJS useForm for form state:
+
+```typescript
+// ✅ GOOD - InertiaJS useForm
+import { useForm } from '@inertiajs/react';
+
+const { data, setData, post, processing, errors, reset } = useForm({
+  title: '',
+  content: '',
+});
+
+// ❌ BAD - Manual state management
+const [title, setTitle] = useState('');
+const [content, setContent] = useState('');
+const [errors, setErrors] = useState({});
+```
+
+## Component Structure Template
+
+Follow this structure for all components:
+
+```typescript
+// 1. External imports
+import { useState } from 'react';
+import { router } from '@inertiajs/react';
+
+// 2. Internal imports (components)
+import { Button } from '@/Components/ui/button';
+import { Card } from '@/Components/ui/card';
+
+// 3. Type imports
+import { PageProps } from '@/types';
+import { PostData } from '@/types/generated';
+
+// 4. Icon imports
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart } from '@fortawesome/free-solid-svg-icons';
+
+// 5. Interface definitions
+interface PostShowProps extends PageProps {
+  post: PostData;
+  relatedPosts: PostData[];
+}
+
+// 6. Component
+export default function PostShow({ auth, post, relatedPosts }: PostShowProps) {
+  // 7. State hooks
+  const [isLiked, setIsLiked] = useState(false);
+
+  // 8. Effect hooks (if needed)
+  // Avoid useEffect for data fetching - use Inertia props instead
+
+  // 9. Event handlers
+  const handleLike = () => {
+    router.post(`/posts/${post.id}/like`, {}, {
+      onSuccess: () => setIsLiked(true),
+    });
+  };
+
+  // 10. Render helpers (if complex)
+  const renderRelatedPosts = () => {
+    return relatedPosts.map((related) => (
+      <Card key={related.id}>{related.title}</Card>
+    ));
+  };
+
+  // 11. Main render
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <article>
+        <h1 className="mb-4 text-3xl font-bold">{post.title}</h1>
+        <p className="text-muted-foreground">{post.content}</p>
+
+        <Button onClick={handleLike} variant={isLiked ? 'default' : 'outline'}>
+          <FontAwesomeIcon icon={faHeart} className="mr-2" />
+          {isLiked ? 'Liked' : 'Like'}
+        </Button>
+      </article>
+
+      <aside className="mt-8">
+        <h2 className="mb-4 text-xl font-semibold">Related Posts</h2>
+        {renderRelatedPosts()}
+      </aside>
+    </div>
+  );
+}
+```
+
+## InertiaJS Best Practices
+
+### Sharing Data
+
+Auth data is shared automatically via HandleInertiaRequests middleware:
+
+```typescript
+// ✅ GOOD - Auth is always available via PageProps
+export default function Dashboard({ auth }: PageProps) {
+  if (!auth.user) {
+    return <div>Please log in</div>;
+  }
+
+  return <div>Welcome, {auth.user.name}</div>;
+}
+```
+
+### Loading States
+
+Use InertiaJS processing state:
+
+```typescript
+// ✅ GOOD - Use InertiaJS processing state
+import { useForm } from '@inertiajs/react';
+
+const { post, processing } = useForm({ title: '' });
+
+<Button onClick={() => post('/posts')} disabled={processing}>
+  {processing ? 'Saving...' : 'Save Post'}
+</Button>
+
+// ❌ BAD - Manual loading state
+const [isLoading, setIsLoading] = useState(false);
+
+const handleSubmit = async () => {
+  setIsLoading(true);
+  await fetch('/posts', { method: 'POST' });
+  setIsLoading(false);
+};
+```
+
+### Preserving State
+
+Use preserveState for modals and UI state:
+
+```typescript
+// ✅ GOOD - Preserve scroll and UI state
+router.visit('/posts', {
+  preserveScroll: true,
+  preserveState: true,
+});
+
+// For partial reloads
+router.reload({
+  only: ['posts'],
+  preserveScroll: true,
+});
+```
+
+## Type Safety
+
+### PageProps Extension
+
+Always extend PageProps for page components:
+
+```typescript
+// ✅ GOOD - Extend PageProps
+import { PageProps } from '@/types';
+
+interface MyPageProps extends PageProps {
+  additionalData: string;
+}
+
+export default function MyPage({ auth, additionalData }: MyPageProps) {
+  // auth is properly typed
+  return <div>{auth.user?.name}</div>;
+}
+
+// ❌ BAD - Define props from scratch
+interface MyPageProps {
+  auth: any;
+  additionalData: string;
+}
+```
+
+### Event Handlers
+
+Type event handlers correctly:
+
+```typescript
+// ✅ GOOD - Typed event handlers
+const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  event.preventDefault();
+};
+
+const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  setData('email', event.target.value);
+};
+
+const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  event.preventDefault();
+  post('/submit');
+};
+
+// ❌ BAD - Untyped events
+const handleClick = (event) => {
+  event.preventDefault();
+};
+```
+
+### Component Props
+
+Always define prop interfaces:
+
+```typescript
+// ✅ GOOD - Defined interface
+interface PostCardProps {
+  post: PostData;
+  onEdit?: () => void;
+  className?: string;
+}
+
+export function PostCard({ post, onEdit, className }: PostCardProps) {
+  return <div className={className}>{post.title}</div>;
+}
+
+// ❌ BAD - Inline type or any
+export function PostCard({ post, onEdit }: { post: any; onEdit?: any }) {
+  return <div>{post.title}</div>;
+}
+```
+
+## Tailwind CSS Best Practices
+
+### Utility-First
+
+Use Tailwind utilities, not custom CSS:
+
+```typescript
+// ✅ GOOD - Tailwind utilities
+<div className="flex items-center justify-between rounded-lg bg-white p-6 shadow-lg">
+  <h2 className="text-2xl font-bold text-gray-900">Title</h2>
+</div>
+
+// ❌ BAD - Inline styles
+<div style={{
+  display: 'flex',
+  alignItems: 'center',
+  padding: '1.5rem',
+  borderRadius: '0.5rem'
+}}>
+  <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Title</h2>
+</div>
+```
+
+### Conditional Classes
+
+Use `cn()` utility for conditional styling:
+
+```typescript
+// ✅ GOOD - cn() utility
+import { cn } from '@/lib/utils';
+
+<div className={cn(
+  'rounded-lg p-4',
+  isActive && 'bg-primary text-white',
+  isDisabled && 'cursor-not-allowed opacity-50'
+)}>
+
+// ❌ BAD - Template literals
+<div className={`rounded-lg p-4 ${isActive ? 'bg-primary text-white' : ''}`}>
+```
+
+### Dark Mode Support
+
+Use Tailwind dark mode classes:
+
+```typescript
+// ✅ GOOD - Dark mode support
+<div className="bg-white text-gray-900 dark:bg-gray-800 dark:text-white">
+  <p className="text-gray-600 dark:text-gray-400">Description</p>
+</div>
+```
+
+## Anti-Patterns to Avoid
+
+### Don't Fetch Data with useEffect
+
+```typescript
+// ❌ BAD - Fetching data in component
+useEffect(() => {
+  fetch('/api/posts')
+    .then(r => r.json())
+    .then(setPosts);
+}, []);
+
+// ✅ GOOD - Data comes from InertiaJS props
+export default function Posts({ auth, posts }: PostsProps) {
+  return <div>{posts.map(...)}</div>;
+}
+```
+
+### Don't Use Regular Axios/Fetch
+
+```typescript
+// ❌ BAD - Using axios directly
+import axios from 'axios';
+
+const handleDelete = async (id: number) => {
+  await axios.delete(`/posts/${id}`);
+};
+
+// ✅ GOOD - Use InertiaJS router
+import { router } from '@inertiajs/react';
+
+const handleDelete = (id: number) => {
+  router.delete(`/posts/${id}`, {
+    onSuccess: () => console.log('Deleted'),
+  });
+};
+```
+
+### Don't Skip TypeScript Types
+
+```typescript
+// ❌ BAD - Using any
+const user: any = auth.user;
+
+// ✅ GOOD - Use proper types
+const user: UserData | null = auth.user;
+```
+
+### Don't Create Custom Components for UI Primitives
+
+```typescript
+// ❌ BAD - Custom button component
+export function MyButton({ children, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      className="rounded bg-blue-500 px-4 py-2 text-white"
+    >
+      {children}
+    </button>
+  );
+}
+
+// ✅ GOOD - Use Shadcn/ui Button
+import { Button } from '@/Components/ui/button';
+
+<Button onClick={onClick}>{children}</Button>
+```
+
+## Summary
+
+- Use InertiaJS router for all navigation and data mutations
+- Extend PageProps for all page components
+- Use generated types from PHP Data classes
+- Prefer Shadcn/ui components over custom UI elements
+- Use Tailwind utilities with cn() for conditional styling
+- Use FontAwesome icons via react-fontawesome
+- Type all props, state, and event handlers
+- Never fetch data with useEffect - use Inertia props
+- Keep components focused and composable
+- Follow the 2-space, 100-char formatting standards

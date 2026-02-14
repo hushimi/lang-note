@@ -1,0 +1,441 @@
+---
+description: Laravel clean architecture using DDD approach
+globs: **/*.php
+alwaysApply: false
+---
+
+# Laravel Clean Architecture (DDD Approach)
+
+This project follows clean architecture principles using Laravel DDD patterns.
+
+## Tech Stack
+
+- **Laravel 12** - PHP framework
+- **Laravel Data** - Type-safe DTOs
+- **TypeScript Transformer** - Generate TypeScript types from PHP
+- **InertiaJS** - Modern monolith approach
+- **Socialite** - OAuth authentication
+
+## Architecture Layers
+
+### Domain Layer (app/Models/, app/Data/)
+- **Models**: Eloquent models representing business entities
+- **Data**: Laravel Data objects (immutable DTOs)
+
+### Application Layer (app/Actions/)
+- **Actions**: Single-purpose business logic classes
+- Use case implementations
+- Invokable classes that orchestrate domain logic
+
+### Infrastructure Layer (app/Services/, app/Repositories/)
+- **Services**: External integrations (OAuth, APIs, third-party services)
+- **Repositories**: Data access patterns (optional, use when needed)
+
+### Presentation Layer (app/Http/)
+- **Controllers**: Thin layer that delegates to Actions
+- **Middleware**: Request/response processing
+- **Requests**: Form validation classes
+- **Resources**: API response formatting (if needed)
+
+## Coding Standards
+
+### Controllers (Thin Layer)
+
+Controllers should be thin and delegate to Actions:
+
+```php
+// ✅ GOOD - Thin controller
+class OAuthController extends Controller
+{
+    public function __construct(
+        private CreateUserFromOAuth $createUser
+    ) {}
+
+    public function handleCallback()
+    {
+        $oauthUser = Socialite::driver('google')->user();
+        $userData = ($this->createUser)($oauthUser->getRaw());
+
+        Auth::loginUsingId($userData->id);
+
+        return Inertia::render('Dashboard');
+    }
+}
+
+// ❌ BAD - Fat controller with business logic
+class OAuthController extends Controller
+{
+    public function handleCallback()
+    {
+        $oauthUser = Socialite::driver('google')->user();
+
+        // Business logic in controller (BAD)
+        $user = User::where('google_id', $oauthUser->getId())->first();
+        if (!$user) {
+            $user = new User();
+            $user->google_id = $oauthUser->getId();
+        }
+        $user->name = $oauthUser->getName();
+        $user->email = $oauthUser->getEmail();
+        $user->save();
+
+        Auth::login($user);
+        return Inertia::render('Dashboard');
+    }
+}
+```
+
+### Actions (Business Logic)
+
+Actions should be single-purpose, invokable classes:
+
+```php
+// ✅ GOOD - Action with single responsibility
+namespace App\Actions\Auth;
+
+use App\Data\UserData;
+use App\Models\User;
+
+class CreateUserFromOAuth
+{
+    public function __invoke(array $oauthData): UserData
+    {
+        $user = User::updateOrCreate(
+            ['google_id' => $oauthData['id']],
+            [
+                'name' => $oauthData['name'],
+                'email' => $oauthData['email'],
+                'avatar' => $oauthData['avatar'],
+                'email_verified_at' => now(),
+            ]
+        );
+
+        return UserData::from($user);
+    }
+}
+
+// ❌ BAD - Action doing multiple things
+class HandleOAuthLogin
+{
+    public function execute($provider)
+    {
+        // Too many responsibilities
+        $user = $this->createUser();
+        $this->sendWelcomeEmail($user);
+        $this->logUserIn($user);
+        $this->trackAnalytics($user);
+        return $user;
+    }
+}
+```
+
+### Data Classes (DTOs)
+
+Always use Laravel Data with TypeScript generation:
+
+```php
+// ✅ GOOD - Data class with TypeScript generation
+namespace App\Data;
+
+use Spatie\LaravelData\Data;
+use Spatie\TypeScriptTransformer\Attributes\TypeScript;
+
+#[TypeScript]
+class UserData extends Data
+{
+    public function __construct(
+        public int $id,
+        public string $name,
+        public string $email,
+        public ?string $avatar,
+    ) {}
+}
+
+// ❌ BAD - Using plain arrays
+public function getUser(): array
+{
+    return [
+        'id' => $user->id,
+        'name' => $user->name,
+        'email' => $user->email,
+    ];
+}
+
+// ❌ BAD - Missing TypeScript attribute
+class UserData extends Data
+{
+    public function __construct(
+        public int $id,
+        public string $name,
+    ) {}
+}
+```
+
+### Models (Domain Entities)
+
+Keep models clean and focused:
+
+```php
+// ✅ GOOD - Clean model
+namespace App\Models;
+
+use Illuminate\Foundation\Auth\User as Authenticatable;
+
+class User extends Authenticatable
+{
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'google_id',
+        'avatar',
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
+}
+
+// ❌ BAD - Model with business logic
+class User extends Authenticatable
+{
+    public function createFromOAuth($oauthData)
+    {
+        // Business logic should be in Actions
+        $this->name = $oauthData['name'];
+        $this->save();
+        $this->sendWelcomeEmail();
+    }
+}
+```
+
+## Type Safety Requirements
+
+### Always Use Type Declarations
+
+```php
+// ✅ GOOD - Typed properties and return types
+class CreatePost
+{
+    public function __invoke(array $data): PostData
+    {
+        $post = Post::create($data);
+        return PostData::from($post);
+    }
+}
+
+// ❌ BAD - No type declarations
+class CreatePost
+{
+    public function __invoke($data)
+    {
+        $post = Post::create($data);
+        return $post->toArray();
+    }
+}
+```
+
+### Use Laravel Data for DTOs
+
+Always return Data objects, not arrays:
+
+```php
+// ✅ GOOD - Return Data objects
+public function index(): Response
+{
+    $posts = Post::all();
+    return Inertia::render('Posts/Index', [
+        'posts' => PostData::collection($posts),
+    ]);
+}
+
+// ❌ BAD - Return raw models or arrays
+public function index(): Response
+{
+    $posts = Post::all();
+    return Inertia::render('Posts/Index', [
+        'posts' => $posts->toArray(),
+    ]);
+}
+```
+
+## InertiaJS Patterns
+
+### Controllers Return Inertia
+
+```php
+// ✅ GOOD - Return Inertia response
+public function show(Post $post): Response
+{
+    return Inertia::render('Posts/Show', [
+        'post' => PostData::from($post),
+    ]);
+}
+
+// ❌ BAD - Return JSON or view
+public function show(Post $post)
+{
+    return response()->json($post);
+}
+```
+
+### Share Data via Middleware
+
+Use HandleInertiaRequests for shared data:
+
+```php
+// ✅ GOOD - Share auth data in middleware
+public function share(Request $request): array
+{
+    return [
+        ...parent::share($request),
+        'auth' => [
+            'user' => $request->user()
+                ? UserData::from($request->user())
+                : null,
+        ],
+    ];
+}
+```
+
+## Directory Structure
+
+Follow this structure for clean architecture:
+
+```
+app/
+├── Actions/              # Business logic (use cases)
+│   ├── Auth/
+│   │   ├── CreateUserFromOAuth.php
+│   │   └── LogoutUser.php
+│   └── Posts/
+│       ├── CreatePost.php
+│       └── UpdatePost.php
+├── Data/                 # DTOs with TypeScript generation
+│   ├── UserData.php
+│   └── PostData.php
+├── Http/
+│   ├── Controllers/      # Thin controllers
+│   │   └── Auth/
+│   │       └── OAuthController.php
+│   ├── Middleware/
+│   │   └── HandleInertiaRequests.php
+│   └── Requests/         # Form validation
+│       └── StorePostRequest.php
+├── Models/               # Eloquent models
+│   ├── User.php
+│   └── Post.php
+└── Services/             # External services
+    ├── GoogleOAuthService.php
+    └── NotificationService.php
+```
+
+## Dependency Injection
+
+Use constructor injection for dependencies:
+
+```php
+// ✅ GOOD - Constructor injection
+class PostController extends Controller
+{
+    public function __construct(
+        private CreatePost $createPost,
+        private UpdatePost $updatePost
+    ) {}
+
+    public function store(StorePostRequest $request)
+    {
+        $postData = ($this->createPost)($request->validated());
+        return redirect()->route('posts.show', $postData->id);
+    }
+}
+
+// ❌ BAD - Direct instantiation
+class PostController extends Controller
+{
+    public function store(Request $request)
+    {
+        $action = new CreatePost();
+        $post = $action->execute($request->all());
+        return redirect()->back();
+    }
+}
+```
+
+## TypeScript Generation
+
+Always add `#[TypeScript]` to Data classes that will be used in the frontend:
+
+```php
+// ✅ GOOD - TypeScript attribute for frontend use
+#[TypeScript]
+class PostData extends Data
+{
+    public function __construct(
+        public int $id,
+        public string $title,
+        public string $content,
+        public UserData $author,
+        public Carbon $created_at,
+    ) {}
+}
+
+// ❌ BAD - Missing TypeScript attribute
+class PostData extends Data
+{
+    // Frontend won't have type definitions
+    public function __construct(
+        public int $id,
+        public string $title,
+    ) {}
+}
+```
+
+After creating or modifying Data classes, run:
+```bash
+npm run generate-types
+```
+
+## Database Prefix
+
+This project uses table prefix `ln_`. Laravel handles this automatically, but for raw queries:
+
+```php
+// ✅ GOOD - Prefix handled automatically
+$users = User::all();
+$sessions = DB::table('sessions')->get();
+
+// ✅ GOOD - Raw query with prefix helper
+DB::select('SELECT * FROM ' . DB::getTablePrefix() . 'users');
+
+// ❌ BAD - Raw query without prefix
+DB::select('SELECT * FROM users');
+```
+
+## Anti-Patterns to Avoid
+
+1. **Fat Controllers**: Business logic should be in Actions, not Controllers
+2. **Direct DB Queries in Controllers**: Use Actions or Models
+3. **Missing Type Declarations**: Always declare parameter and return types
+4. **Plain Arrays Instead of Data Objects**: Use Laravel Data for type safety
+5. **Business Logic in Models**: Keep models focused on data representation
+6. **Missing TypeScript Attributes**: Frontend needs generated types
+7. **Tight Coupling**: Use dependency injection, not direct instantiation
+
+## Summary
+
+- Keep controllers thin - delegate to Actions
+- Use Laravel Data for all DTOs - add `#[TypeScript]` attribute
+- Create Actions for business logic - single responsibility
+- Use dependency injection for testability
+- Declare all types for better IDE support and type safety
+- Follow the defined directory structure

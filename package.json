@@ -1,0 +1,52 @@
+{
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "vite build",
+        "dev": "vite",
+        "generate-types": "php artisan typescript:transform",
+        "format": "prettier --write \"resources/js/**/*.{ts,tsx}\" \"resources/css/**/*.css\"",
+        "format:check": "prettier --check \"resources/js/**/*.{ts,tsx}\" \"resources/css/**/*.css\"",
+        "lint": "eslint \"resources/js/**/*.{ts,tsx}\"",
+        "lint:fix": "eslint \"resources/js/**/*.{ts,tsx}\" --fix",
+        "type-check": "tsc --noEmit"
+    },
+    "devDependencies": {
+        "@tailwindcss/forms": "^0.5.11",
+        "@tailwindcss/vite": "^4.0.0",
+        "@types/react": "^19.2.14",
+        "@types/react-dom": "^19.2.3",
+        "@typescript-eslint/eslint-plugin": "^8.55.0",
+        "@typescript-eslint/parser": "^8.55.0",
+        "@vitejs/plugin-react": "^5.1.4",
+        "autoprefixer": "^10.4.24",
+        "axios": "^1.7.4",
+        "class-variance-authority": "^0.7.1",
+        "clsx": "^2.1.1",
+        "concurrently": "^9.0.1",
+        "eslint": "^9.39.2",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-react": "^7.37.5",
+        "eslint-plugin-react-hooks": "^7.0.1",
+        "laravel-vite-plugin": "^1.2.0",
+        "lucide-react": "^0.564.0",
+        "postcss": "^8.5.6",
+        "prettier": "^3.8.1",
+        "prettier-plugin-tailwindcss": "^0.7.2",
+        "tailwind-merge": "^3.4.0",
+        "tailwindcss": "^4.1.18",
+        "typescript": "^5.9.3",
+        "vite": "^6.0.11"
+    },
+    "dependencies": {
+        "@fortawesome/fontawesome-svg-core": "^7.2.0",
+        "@fortawesome/free-brands-svg-icons": "^7.2.0",
+        "@fortawesome/free-regular-svg-icons": "^7.2.0",
+        "@fortawesome/free-solid-svg-icons": "^7.2.0",
+        "@fortawesome/react-fontawesome": "^3.2.0",
+        "@inertiajs/react": "^2.3.15",
+        "react": "^19.2.4",
+        "react-dom": "^19.2.4",
+        "ziggy-js": "^2.6.0"
+    }
+}
