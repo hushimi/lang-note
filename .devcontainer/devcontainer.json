@@ -13,7 +13,13 @@
       "version": "latest"
     }
   },
-  "forwardPorts": [8000, 5173, 3306, 8025, 1025],
+  "forwardPorts": [
+    8000,
+    5173,
+    3306,
+    8025,
+    1025
+  ],
   "portsAttributes": {
     "8000": {
       "label": "Apache (Laravel)",
@@ -123,6 +129,5 @@
     }
   },
   "postCreateCommand": "composer install && npm install && sudo chown -R dev:dev /var/www/html/lang-note && git config --global --add safe.directory /var/www/html/lang-note",
-  "postStartCommand": "sudo chown -R dev:dev /var/www/html/lang-note",
-  "initializeCommand": "ssh-add -l > /dev/null 2>&1 || (echo '❌ SSH keys not loaded on WSL2!' && echo 'Run: source ~/.bashrc && ssh-add -l' && exit 0)"
+  "postStartCommand": "sudo chown -R dev:dev /var/www/html/lang-note"
 }
