@@ -1,48 +1,14 @@
-import { router } from '@inertiajs/react';
 import { PageProps } from '@/types';
-import { Button } from '@/Components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/Components/ui/card';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSignOutAlt, faBook, faChartLine, faCog } from '@fortawesome/free-solid-svg-icons';
+import { faBook, faChartLine, faCog } from '@fortawesome/free-solid-svg-icons';
+import Header from '@/Components/Header';
+import Footer from '@/Components/Footer';
 
 export default function Dashboard({ auth }: PageProps) {
-  const handleLogout = () => {
-    router.post('/logout');
-  };
-
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
-      <nav className="border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 justify-between">
-            <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Lang Note</h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              {auth.user && (
-                <>
-                  <div className="flex items-center space-x-3">
-                    {auth.user.avatar && (
-                      <img
-                        src={auth.user.avatar}
-                        alt={auth.user.name}
-                        className="h-8 w-8 rounded-full"
-                      />
-                    )}
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      {auth.user.name}
-                    </span>
-                  </div>
-                  <Button variant="outline" size="sm" onClick={handleLogout}>
-                    <FontAwesomeIcon icon={faSignOutAlt} className="mr-2" />
-                    Logout
-                  </Button>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-page-bg flex flex-col">
+      <Header auth={auth} />
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="mb-8">
@@ -99,6 +65,8 @@ export default function Dashboard({ auth }: PageProps) {
           </Card>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }

@@ -20,8 +20,15 @@ export default defineConfig({
     server: {
         host: '0.0.0.0',
         port: 5173,
+        strictPort: true,
         hmr: {
             host: 'localhost',
+            protocol: 'ws',
+        },
+        watch: {
+            usePolling: true,
+            interval: 100,
         },
     },
+    base: process.env.NODE_ENV === 'production' ? '/lang-note/' : '/',
 });
