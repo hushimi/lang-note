@@ -1,0 +1,57 @@
+name: チケット
+description: 新機能の提案や改善要望などの一般的なチケット
+title: "[Ticket] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: 概要
+      description: このチケットの目的と概要を説明してください
+      placeholder: この機能/改善により、どのような問題が解決されるか、またはどのような価値が提供されるかを説明してください
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: 動機・背景
+      description: なぜこの機能/改善が必要なのか、背景や動機を説明してください
+      placeholder: ユーザーからの要望、現在の課題、ビジネス要件など
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_solution
+    attributes:
+      label: 提案する解決策
+      description: どのように実装・解決するかを説明してください（可能であれば）
+      placeholder: 実装のアイデア、アプローチ、考慮事項など
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: 受け入れ基準
+      description: このチケットが完了したと判断するための基準をリストアップしてください
+      placeholder: |
+        - [ ] 基準1
+        - [ ] 基準2
+        - [ ] 基準3
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: 追加情報
+      description: スクリーンショット、参考資料、関連するIssueなど、その他の情報があれば記載してください
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 優先度
+      options:
+        - 低
+        - 中
+        - 高
+        - 緊急
+    validations:
+      required: true

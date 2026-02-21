@@ -1,13 +1,12 @@
 <?php
 
 use App\Http\Controllers\Auth\OAuthController;
+use App\Http\Controllers\TopController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 // Public routes
-Route::get('/', function () {
-    return Inertia::render('Welcome');
-})->name('welcome');
+Route::get('/', [TopController::class, 'top'])->name('top');
 
 // OAuth routes
 Route::prefix('auth')->group(function () {

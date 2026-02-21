@@ -1,0 +1,86 @@
+name: バグ修正
+description: バグの報告と修正依頼
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: バグの概要
+      description: バグの内容を簡潔に説明してください
+      placeholder: 何が起こっているか、期待される動作との違いを説明してください
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps_to_reproduce
+    attributes:
+      label: 再現手順
+      description: バグを再現するための手順を記載してください
+      placeholder: |
+        1. '...' に移動
+        2. '...' をクリック
+        3. '...' までスクロール
+        4. エラーを確認
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: 期待される動作
+      description: 正常な場合に期待される動作を説明してください
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual_behavior
+    attributes:
+      label: 実際の動作
+      description: 実際に何が起こっているかを説明してください
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: スクリーンショット
+      description: 可能であれば、問題を示すスクリーンショットを添付してください
+      placeholder: スクリーンショットをここにドラッグ&ドロップ
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: 環境情報
+      description: 以下の情報を記載してください
+      placeholder: |
+        - OS: [例: Windows 11, macOS 14.0, Ubuntu 22.04]
+        - ブラウザ: [例: Chrome 120, Firefox 121, Safari 17]
+        - バージョン: [例: v1.2.3]
+        - その他: [関連する環境情報]
+
+  - type: textarea
+    id: error_logs
+    attributes:
+      label: エラーログ・スタックトレース
+      description: エラーメッセージやログがあれば記載してください
+      render: shell
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: 追加情報
+      description: その他の関連情報があれば記載してください
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: 深刻度
+      description: このバグの深刻度を選択してください
+      options:
+        - 低 - 軽微な問題、回避策あり
+        - 中 - 機能に影響があるが回避策あり
+        - 高 - 機能が使用できない、重要な問題
+        - 緊急 - セキュリティ問題、データ損失のリスク
+    validations:
+      required: true
