@@ -3,6 +3,7 @@
 Auto-generated from all feature plans. Last updated: 2026-02-15
 
 ## Active Technologies
+- MySQL 8.0+ with table prefix `ln_` (existing configuration) (002-google-oauth-login)
 
 - (001-top-page-header)
 
@@ -22,6 +23,7 @@ tests/
 : Follow standard conventions
 
 ## Recent Changes
+- 002-google-oauth-login: Added MySQL 8.0+ with table prefix `ln_` (existing configuration)
 
 - 001-top-page-header: Added
 
