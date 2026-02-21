@@ -21,7 +21,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md bg-white">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center">
             Lang Noteへようこそ
@@ -30,11 +30,11 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
             ログインすることでプライバシーポリシーに同意したことになります
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="flex flex-col items-center justify-center py-6">
           <Button
             onClick={handleGoogleLogin}
-            className="w-full bg-white hover:bg-gray-50 text-neutral border border-gray-300 shadow-sm"
+            className="w-full bg-white hover:bg-gray-50 text-neutral border border-gray-300 shadow-sm cursor-pointer"
             size="lg"
           >
             <FontAwesomeIcon icon={faGoogle} className="mr-3 text-lg" />

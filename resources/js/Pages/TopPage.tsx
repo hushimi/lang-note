@@ -37,9 +37,6 @@ export default function TopPage({ auth }: PageProps) {
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8" aria-label="Language selection">
         <div className="mb-12 text-center">
           <h2 className="text-3xl font-bold text-neutral">学習する言語を選択</h2>
-          <p className="mt-4 text-lg text-neutral/70">
-            あなたが学びたい言語を選んでください
-          </p>
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3" role="list">
