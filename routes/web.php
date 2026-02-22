@@ -18,10 +18,6 @@ Route::prefix('auth')->group(function () {
 
 // Authenticated routes
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
-
     Route::post('/logout', function () {
         auth()->logout();
         request()->session()->invalidate();

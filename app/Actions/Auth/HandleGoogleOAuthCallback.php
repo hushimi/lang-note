@@ -24,9 +24,14 @@ final class HandleGoogleOAuthCallback
      */
     public function __invoke(): RedirectResponse
     {
+        // Debug: Log that callback was called
+        Log::info('HandleGoogleOAuthCallback::__invoke called');
+
         try {
             // Get Google user from OAuth callback
+            Log::info('Attempting to get Google user from Socialite');
             $googleUser = Socialite::driver('google')->user();
+            Log::info('Google user retrieved', ['google_id' => $googleUser->getId()]);
 
             // Extract only Google ID (not email or name)
             $googleId = $googleUser->getId();
@@ -52,14 +57,16 @@ final class HandleGoogleOAuthCallback
             // Create SessionUser instance with Google ID only
             $sessionUser = new SessionUser($googleId);
 
-            // Store Google ID in session for SessionUserProvider
+            // Log in the user first (this migrates the session to a new ID)
+            Auth::login($sessionUser);
+
+            // Store Google ID in session AFTER login (post-migration session)
             session(['auth.google_id' => $googleId]);
 
-            // Log in the user
-            Auth::login($sessionUser, true);
+            session()->save();
+            session()->regenerateToken();
 
-            // Redirect to dashboard
-            return redirect()->intended('/dashboard');
+            return redirect()->intended(url('/'));
         } catch (Exception $e) {
             // Log error for debugging (optional)
             Log::error('Google OAuth callback failed', [

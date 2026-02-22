@@ -1,9 +1,9 @@
-import { Link, router } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import { Button } from '@/Components/ui/button';
 import { PageProps } from '@/types';
 import { useState } from 'react';
 import LoginModal from '@/Components/LoginModal';
-import { route } from 'ziggy-js';
+import LogoutModal from '@/Components/LogoutModal';
 
 interface HeaderProps {
   auth: PageProps['auth'];
@@ -11,10 +11,7 @@ interface HeaderProps {
 
 export default function Header({ auth }: HeaderProps) {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-
-  const handleLogout = () => {
-    router.post(route('logout'));
-  };
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   return (
     <>
@@ -33,32 +30,17 @@ export default function Header({ auth }: HeaderProps) {
 
             {/* Right Side - Auth Controls */}
             <div className="flex items-center space-x-2 sm:space-x-4">
-              {auth.user ? (
-                <>
-                  <div className="flex items-center space-x-2 sm:space-x-3">
-                    {auth.user.avatar && (
-                      <img
-                        src={auth.user.avatar}
-                        alt={auth.user.name || 'User'}
-                        className="h-8 w-8 rounded-full"
-                      />
-                    )}
-                    {auth.user.name && (
-                      <span className="hidden sm:inline text-sm font-medium text-neutral">
-                        {auth.user.name}
-                      </span>
-                    )}
-                  </div>
-                  <Button
-                    onClick={handleLogout}
-                    variant="ghost"
-                    size="sm"
-                    className="cursor-pointer"
-                    aria-label="Logout from your account"
-                  >
-                    Logout
-                  </Button>
-                </>
+              {/* Login state is detected from session via HandleInertiaRequests middleware */}
+              {auth.isLoggedIn && auth.user ? (
+                <Button
+                  onClick={() => setIsLogoutModalOpen(true)}
+                  variant="outline"
+                  size="sm"
+                  className="cursor-pointer"
+                  aria-label="Logout from your account"
+                >
+                  Logout
+                </Button>
               ) : (
                 <Button
                   onClick={() => setIsLoginModalOpen(true)}
@@ -77,6 +59,10 @@ export default function Header({ auth }: HeaderProps) {
       <LoginModal
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
+      />
+      <LogoutModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)}
       />
     </>
   );
