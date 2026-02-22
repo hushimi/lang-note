@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
-class HandleInertiaRequests extends Middleware
+final class HandleInertiaRequests extends Middleware
 {
     /**
      * The root template that's loaded on the first page visit.
@@ -35,14 +37,16 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user();
+
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user() ? [
-                    'id' => $request->user()->id,
-                    'name' => $request->user()->name,
-                    'email' => $request->user()->email,
-                    'avatar' => $request->user()->avatar,
+                'user' => $user ? [
+                    'id' => $user->getAuthIdentifier(),
+                    'name' => method_exists($user, 'name') ? $user->name : null,
+                    'email' => method_exists($user, 'email') ? $user->email : null,
+                    'avatar' => method_exists($user, 'avatar') ? $user->avatar : null,
                 ] : null,
             ],
         ];

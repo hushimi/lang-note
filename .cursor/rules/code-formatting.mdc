@@ -1,0 +1,105 @@
+---
+description: Code formatting rules - 2 space indentation for all code
+globs: **/*.{php,ts,tsx,js,jsx,css,scss,json,yml,yaml}
+alwaysApply: true
+---
+
+# Code Formatting Rules
+
+This project uses **2 spaces for indentation** across all backend and frontend code.
+
+## Indentation Standard
+
+### Backend (PHP)
+- **Indentation**: 2 spaces (NOT 4 spaces)
+- **File types**: All `.php` files
+- **Applies to**: Controllers, Actions, Models, Services, Middleware, Providers, etc.
+
+### Frontend (TypeScript/JavaScript/React)
+- **Indentation**: 2 spaces
+- **File types**: `.ts`, `.tsx`, `.js`, `.jsx`
+- **Applies to**: Components, Pages, utilities, configuration files
+
+### Configuration Files
+- **JSON**: 2 spaces
+- **YAML/YML**: 2 spaces
+- **CSS/SCSS**: 2 spaces
+
+## Examples
+
+### PHP (Backend)
+```php
+<?php
+
+namespace App\Actions\Auth;
+
+class HandleGoogleOAuthCallback
+{
+  public function __construct(
+    private OAuthTokenService $oauthTokenService
+  ) {
+  }
+
+  public function __invoke(): RedirectResponse
+  {
+    try {
+      $googleUser = Socialite::driver('google')->user();
+      $googleId = $googleUser->getId();
+
+      return redirect()->intended('/dashboard');
+    } catch (\Exception $e) {
+      return redirect('/')->with('error', 'Authentication failed');
+    }
+  }
+}
+```
+
+### TypeScript/React (Frontend)
+```typescript
+export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
+  const handleGoogleLogin = () => {
+    window.location.href = route('auth.google');
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-md bg-white">
+        <DialogHeader>
+          <DialogTitle>Lang Noteへようこそ</DialogTitle>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+  );
+}
+```
+
+## Configuration Files
+
+### .editorconfig
+- All PHP files: `indent_size = 2`
+- All TypeScript/JavaScript files: `indent_size = 2`
+- YAML files: `indent_size = 2`
+
+### .prettierrc
+- `tabWidth: 2` (already configured)
+
+## Important Notes
+
+1. **Never use tabs** - Always use spaces
+2. **Never use 4 spaces** - Always use 2 spaces
+3. **Consistent indentation** - Maintain 2 spaces throughout the entire codebase
+4. **Auto-formatting** - Use Prettier for frontend and Laravel Pint for backend
+
+## Tools
+
+- **Frontend**: Prettier (configured with `tabWidth: 2`)
+- **Backend**: Laravel Pint (configured in `pint.json` - uses `.editorconfig` for 2-space indentation)
+- **Editor**: Configure your editor to use 2 spaces for all file types
+
+## Verification
+
+To verify indentation:
+- Check `.editorconfig` file
+- Check `.prettierrc` file
+- Run `npm run format` for frontend
+- Run `./vendor/bin/pint` for backend

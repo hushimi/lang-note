@@ -3,6 +3,7 @@ import { Button } from '@/Components/ui/button';
 import { PageProps } from '@/types';
 import { useState } from 'react';
 import LoginModal from '@/Components/LoginModal';
+import { route } from 'ziggy-js';
 
 interface HeaderProps {
   auth: PageProps['auth'];
@@ -12,7 +13,7 @@ export default function Header({ auth }: HeaderProps) {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const handleLogout = () => {
-    router.post('/logout');
+    router.post(route('logout'));
   };
 
   return (
@@ -38,13 +39,15 @@ export default function Header({ auth }: HeaderProps) {
                     {auth.user.avatar && (
                       <img
                         src={auth.user.avatar}
-                        alt={auth.user.name}
+                        alt={auth.user.name || 'User'}
                         className="h-8 w-8 rounded-full"
                       />
                     )}
-                    <span className="hidden sm:inline text-sm font-medium text-neutral">
-                      {auth.user.name}
-                    </span>
+                    {auth.user.name && (
+                      <span className="hidden sm:inline text-sm font-medium text-neutral">
+                        {auth.user.name}
+                      </span>
+                    )}
                   </div>
                   <Button
                     onClick={handleLogout}

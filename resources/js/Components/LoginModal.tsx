@@ -8,6 +8,7 @@ import {
 import { Button } from '@/Components/ui/button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
+import { route } from 'ziggy-js';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -16,7 +17,8 @@ interface LoginModalProps {
 
 export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const handleGoogleLogin = () => {
-    window.location.href = '/auth/google';
+    // OAuth redirect requires full page navigation (not SPA)
+    window.location.href = route('auth.google');
   };
 
   return (
