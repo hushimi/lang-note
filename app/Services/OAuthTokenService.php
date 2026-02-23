@@ -21,12 +21,13 @@ final class OAuthTokenService
     ): OauthToken {
         $data = [
             'access_token' => $accessToken,
-            'access_token_expires_at' => $accessTokenExpiresAt
+            'access_token_expires_at' => $accessTokenExpiresAt,
         ];
         if ($refreshToken !== null) {
             $data['refresh_token'] = $refreshToken;
             $data['refresh_token_expires_at'] = $refreshTokenExpiresAt;
         }
+
         return OauthToken::updateOrCreate(['google_id' => $googleId], $data);
     }
 
