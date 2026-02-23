@@ -93,4 +93,23 @@
   .text-error {
     color: #ff869a;
   }
+
+  /* Hover text – brand colors */
+  .hover\:text-brand-primary:hover {
+    color: #b2e09d;
+  }
+  .hover\:text-brand-secondary:hover {
+    color: #4ebdff;
+  }
+
+  /* Hover background using theme primary */
+  .hover\:bg-primary:hover {
+    background-color: hsl(var(--primary));
+  }
+  .hover\:bg-secondary:hover {
+    background-color: hsl(var(--secondary));
+  }
+  .hover\:bg-accent:hover {
+    background-color: hsl(var(--accent));
+  }
 }

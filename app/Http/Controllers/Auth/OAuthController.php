@@ -30,4 +30,16 @@ final class OAuthController extends Controller
     {
         return ($this->handleGoogleOAuthCallback)();
     }
+
+    /**
+     * Log the user out and invalidate the session
+     */
+    public function logout(): RedirectResponse
+    {
+        auth()->logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+
+        return redirect(url('/'));
+    }
 }

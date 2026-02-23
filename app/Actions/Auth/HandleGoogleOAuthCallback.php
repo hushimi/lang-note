@@ -24,26 +24,19 @@ final class HandleGoogleOAuthCallback
      */
     public function __invoke(): RedirectResponse
     {
-        // Debug: Log that callback was called
-        Log::info('HandleGoogleOAuthCallback::__invoke called');
-
         try {
             // Get Google user from OAuth callback
-            Log::info('Attempting to get Google user from Socialite');
             $googleUser = Socialite::driver('google')->user();
-            Log::info('Google user retrieved', ['google_id' => $googleUser->getId()]);
-
-            // Extract only Google ID (not email or name)
             $googleId = $googleUser->getId();
 
             // Get token information from Google user
             $token = $googleUser->token;
             $refreshToken = $googleUser->refreshToken;
-            $expiresIn = $googleUser->expiresIn ?? 3600; // Default to 1 hour if not provided
+            $expiresIn = $googleUser->expiresIn ?? 3600;
 
             // Calculate expiration timestamps
             $accessTokenExpiresAt = Carbon::now()->addSeconds($expiresIn);
-            $refreshTokenExpiresAt = $refreshToken ? Carbon::now()->addDays(30) : null; // Refresh tokens typically last 30 days
+            $refreshTokenExpiresAt = $refreshToken ? Carbon::now()->addDays(30) : null;
 
             // Store or update OAuth tokens in database
             $this->oauthTokenService->storeOrUpdateToken(
@@ -68,13 +61,11 @@ final class HandleGoogleOAuthCallback
 
             return redirect()->intended(url('/'));
         } catch (Exception $e) {
-            // Log error for debugging (optional)
             Log::error('Google OAuth callback failed', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            // Redirect with error message
             return redirect('/')->with('error', 'Google認証に失敗しました。もう一度お試しください。');
         }
     }

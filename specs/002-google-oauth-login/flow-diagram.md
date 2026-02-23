@@ -80,7 +80,7 @@
                            └─> retrieveById() reads from session
 
 8. REDIRECT: To dashboard
-   └─> redirect()->intended('/dashboard')
+   └─> redirect()->intended('/')
 
 9. MIDDLEWARE: HandleInertiaRequests
    └─> app/Http/Middleware/HandleInertiaRequests.php
@@ -144,44 +144,48 @@
 
 ### Classes Used During Login
 
-| Class | Role | When Used |
-|-------|------|-----------|
-| `LoginModal.tsx` | Frontend UI component | User clicks login button |
-| `OAuthController` | HTTP request handler | Receives OAuth redirect and callback |
-| `HandleGoogleOAuthCallback` | Business logic (Action) | Orchestrates entire OAuth callback process |
-| `OAuthTokenService` | Token management service | Stores/updates OAuth tokens |
-| `OauthToken` (Model) | Database model | Accesses `oauth_tokens` table |
-| `SessionUser` | Authenticatable implementation | Represents authenticated user (Google ID only) |
-| `SessionUserProvider` | User provider | Retrieves user from session when Auth needs it |
-| `HandleInertiaRequests` | Middleware | Shares auth data to frontend via Inertia |
+| Class                       | Role                           | When Used                                      |
+| --------------------------- | ------------------------------ | ---------------------------------------------- |
+| `LoginModal.tsx`            | Frontend UI component          | User clicks login button                       |
+| `OAuthController`           | HTTP request handler           | Receives OAuth redirect and callback           |
+| `HandleGoogleOAuthCallback` | Business logic (Action)        | Orchestrates entire OAuth callback process     |
+| `OAuthTokenService`         | Token management service       | Stores/updates OAuth tokens                    |
+| `OauthToken` (Model)        | Database model                 | Accesses `oauth_tokens` table                  |
+| `SessionUser`               | Authenticatable implementation | Represents authenticated user (Google ID only) |
+| `SessionUserProvider`       | User provider                  | Retrieves user from session when Auth needs it |
+| `HandleInertiaRequests`     | Middleware                     | Shares auth data to frontend via Inertia       |
 
 ### Classes Used During Logout
 
-| Class | Role | When Used |
-|-------|------|-----------|
-| `Header.tsx` | Frontend UI component | User clicks logout button |
-| `routes/web.php` | Route definition | Logout endpoint handler |
+| Class            | Role                  | When Used                 |
+| ---------------- | --------------------- | ------------------------- |
+| `Header.tsx`     | Frontend UI component | User clicks logout button |
+| `routes/web.php` | Route definition      | Logout endpoint handler   |
 
 ---
 
 ## 🔑 Key Points
 
 ### 1. SessionUser Does NOT Use Database Records
+
 - **No database record**: SessionUser exists only in session
 - **Only Google ID stored**: No email, name, or other personal data
 - **Session-based**: Authentication state maintained via Laravel session
 
 ### 2. OAuthTokenService Stores Only Tokens
+
 - **Database table**: `oauth_tokens` stores Google ID and tokens
 - **No user data**: Email addresses and names are NOT stored
 - **Token management**: Handles access token and refresh token storage
 
 ### 3. SessionUserProvider Retrieves from Session
+
 - **Session lookup**: `retrieveById()` reads from `session('auth.google_id')`
 - **No database queries**: Does not query users table
 - **Laravel Auth integration**: Works seamlessly with Laravel's Auth facade
 
 ### 4. Logout is Simple and Secure
+
 - **Session invalidation**: Completely destroys session
 - **CSRF protection**: Regenerates CSRF token
 - **Token persistence**: OAuth tokens remain in database (for future logins)
@@ -273,12 +277,14 @@ This implementation follows clean architecture principles:
 ## 🔍 Debugging Tips
 
 ### Check Session Data
+
 ```php
 // In any controller or action
 dd(session('auth.google_id')); // Should show Google ID if logged in
 ```
 
 ### Check OAuth Tokens
+
 ```php
 // In tinker or controller
 $token = \App\Models\OauthToken::first();
@@ -286,6 +292,7 @@ dd($token->google_id, $token->access_token);
 ```
 
 ### Check Auth User
+
 ```php
 // In any authenticated route
 dd(auth()->user()); // Should return SessionUser instance
@@ -293,6 +300,7 @@ dd(auth()->id()); // Should return Google ID
 ```
 
 ### Check SessionUserProvider
+
 ```php
 // Verify provider is registered
 $provider = Auth::createUserProvider('session-users');

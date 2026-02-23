@@ -5,7 +5,6 @@ declare(strict_types=1);
 use App\Http\Controllers\Auth\OAuthController;
 use App\Http\Controllers\TopController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 // Public routes
 Route::get('/', [TopController::class, 'top'])->name('top');
@@ -18,11 +17,5 @@ Route::prefix('auth')->group(function () {
 
 // Authenticated routes
 Route::middleware(['auth'])->group(function () {
-    Route::post('/logout', function () {
-        auth()->logout();
-        request()->session()->invalidate();
-        request()->session()->regenerateToken();
-
-        return redirect('/');
-    })->name('logout');
+    Route::post('/logout', [OAuthController::class, 'logout'])->name('logout');
 });
