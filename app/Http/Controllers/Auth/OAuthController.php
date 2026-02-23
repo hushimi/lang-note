@@ -1,18 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Auth;
 
+use App\Actions\Auth\HandleGoogleOAuthCallback;
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
 use Laravel\Socialite\Facades\Socialite;
 
-class OAuthController extends Controller
+final class OAuthController extends Controller
 {
+    public function __construct(
+        private HandleGoogleOAuthCallback $handleGoogleOAuthCallback
+    ) {}
+
     /**
      * Redirect to Google OAuth provider
      */
-    public function redirectToGoogle()
+    public function redirectToGoogle(): RedirectResponse
     {
         return Socialite::driver('google')->redirect();
     }
@@ -20,26 +26,20 @@ class OAuthController extends Controller
     /**
      * Handle Google OAuth callback
      */
-    public function handleGoogleCallback()
+    public function handleGoogleCallback(): RedirectResponse
     {
-        try {
-            $googleUser = Socialite::driver('google')->user();
+        return ($this->handleGoogleOAuthCallback)();
+    }
 
-            $user = User::updateOrCreate(
-                ['google_id' => $googleUser->getId()],
-                [
-                    'name' => $googleUser->getName(),
-                    'email' => $googleUser->getEmail(),
-                    'avatar' => $googleUser->getAvatar(),
-                    'email_verified_at' => now(),
-                ]
-            );
+    /**
+     * Log the user out and invalidate the session
+     */
+    public function logout(): RedirectResponse
+    {
+        auth()->logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
 
-            Auth::login($user, true);
-
-            return redirect()->intended('/dashboard');
-        } catch (\Exception $e) {
-            return redirect('/')->with('error', 'Failed to authenticate with Google');
-        }
+        return redirect(url('/'));
     }
 }

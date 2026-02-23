@@ -4,31 +4,31 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-    plugins: [
-        laravel({
-            input: ['resources/css/app.css', 'resources/js/app.tsx'],
-            refresh: true,
-        }),
-        react(),
-        tailwindcss(),
-    ],
-    resolve: {
-        alias: {
-            '@': '/resources/js',
-        },
+  plugins: [
+    laravel({
+      input: ['resources/css/app.css', 'resources/js/app.tsx'],
+      refresh: true,
+    }),
+    react(),
+    tailwindcss(),
+  ],
+  resolve: {
+    alias: {
+      '@': '/resources/js',
     },
-    server: {
-        host: '0.0.0.0',
-        port: 5173,
-        strictPort: true,
-        hmr: {
-            host: 'localhost',
-            protocol: 'ws',
-        },
-        watch: {
-            usePolling: true,
-            interval: 100,
-        },
+  },
+  server: {
+    host: '0.0.0.0',
+    port: 5173,
+    strictPort: true,
+    hmr: {
+      host: 'localhost',
+      protocol: 'ws',
     },
-    base: process.env.NODE_ENV === 'production' ? '/lang-note/' : '/',
+    watch: {
+      usePolling: true,
+      interval: 5000,
+    },
+  },
+  base: '/lang-note/build/',
 });

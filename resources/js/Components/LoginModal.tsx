@@ -16,28 +16,26 @@ interface LoginModalProps {
 
 export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const handleGoogleLogin = () => {
-    window.location.href = '/auth/google';
+    window.location.href = '/lang-note/auth/google';
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md bg-white">
+      <DialogContent className='bg-white sm:max-w-md'>
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center">
-            Lang Noteへようこそ
-          </DialogTitle>
-          <DialogDescription className="text-center text-sm text-neutral/70 pt-4">
+          <DialogTitle className='text-center text-2xl font-bold'>WELCOME</DialogTitle>
+          <DialogDescription className='text-neutral/70 pt-4 text-center text-sm'>
             ログインすることでプライバシーポリシーに同意したことになります
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col items-center justify-center py-6">
+        <div className='flex flex-col items-center justify-center py-6'>
           <Button
             onClick={handleGoogleLogin}
-            className="w-full bg-white hover:bg-gray-50 text-neutral border border-gray-300 shadow-sm cursor-pointer"
-            size="lg"
+            className='text-neutral hover:bg-primary w-full cursor-pointer border border-gray-300'
+            size='sm'
           >
-            <FontAwesomeIcon icon={faGoogle} className="mr-3 text-lg" />
+            <FontAwesomeIcon icon={faGoogle} className='mr-3 text-lg' />
             Googleで続ける
           </Button>
         </div>
