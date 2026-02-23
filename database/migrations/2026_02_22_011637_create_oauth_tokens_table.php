@@ -14,8 +14,8 @@ return new class extends Migration
     Schema::create('oauth_tokens', function (Blueprint $table) {
       $table->id();
       $table->string('google_id')->unique()->index();
-      $table->string('access_token');
-      $table->string('refresh_token')->nullable();
+      $table->text('access_token');
+      $table->text('refresh_token')->nullable();
       $table->datetime('access_token_expires_at');
       $table->datetime('refresh_token_expires_at')->nullable();
       $table->timestamps();

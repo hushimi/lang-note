@@ -63,7 +63,7 @@ final class HandleGoogleOAuthCallback
         } catch (Exception $e) {
             Log::error('Google OAuth callback failed', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+                'trace' => app()->environment('production') ? null : $e->getTraceAsString(),
             ]);
 
             return redirect('/')->with('error', 'Google認証に失敗しました。もう一度お試しください。');

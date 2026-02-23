@@ -19,15 +19,15 @@ final class OAuthTokenService
         Carbon $accessTokenExpiresAt,
         ?Carbon $refreshTokenExpiresAt
     ): OauthToken {
-        return OauthToken::updateOrCreate(
-            ['google_id' => $googleId],
-            [
-                'access_token' => $accessToken,
-                'refresh_token' => $refreshToken,
-                'access_token_expires_at' => $accessTokenExpiresAt,
-                'refresh_token_expires_at' => $refreshTokenExpiresAt,
-            ]
-        );
+        $data = [
+            'access_token' => $accessToken,
+            'access_token_expires_at' => $accessTokenExpiresAt
+        ];
+        if ($refreshToken !== null) {
+            $data['refresh_token'] = $refreshToken;
+            $data['refresh_token_expires_at'] = $refreshTokenExpiresAt;
+        }
+        return OauthToken::updateOrCreate(['google_id' => $googleId], $data);
     }
 
     /**

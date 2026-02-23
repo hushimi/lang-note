@@ -30,5 +30,5 @@ export default defineConfig({
       interval: 5000,
     },
   },
-  base: process.env.NODE_ENV === 'production' ? '/lang-note/' : '/',
+  base: '/lang-note/build/',
 });

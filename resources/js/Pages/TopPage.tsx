@@ -2,13 +2,9 @@ import { PageProps } from '@/types';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/Components/ui/card';
 import Header from '@/Components/Header';
 import Footer from '@/Components/Footer';
-import LoginModal from '@/Components/LoginModal';
 import topImage from '@/images/top.jpg';
-import { useState } from 'react';
 
 export default function TopPage({ auth }: PageProps) {
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-
   return (
     <div className='bg-page-bg flex min-h-screen flex-col'>
       <Header auth={auth} />
@@ -93,9 +89,6 @@ export default function TopPage({ auth }: PageProps) {
       </main>
 
       <Footer />
-
-      {/* Modals */}
-      <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
     </div>
   );
 }

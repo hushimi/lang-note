@@ -1,26 +1,30 @@
 ---
-description: Code formatting rules - 2 space indentation for all code
+description: Code formatting rules - 2 spaces (frontend), 4 spaces (PHP)
 globs: **/*.{php,ts,tsx,js,jsx,css,scss,json,yml,yaml}
 alwaysApply: true
 ---
 
 # Code Formatting Rules
 
-This project uses **2 spaces for indentation** across all backend and frontend code.
+This project uses **2 spaces for indentation** for frontend code and **4 spaces for indentation** for PHP backend code.
+Also applies to: 9-9
 
 ## Indentation Standard
 
 ### Backend (PHP)
-- **Indentation**: 2 spaces (NOT 4 spaces)
+
+- **Indentation**: 4 spaces
 - **File types**: All `.php` files
 - **Applies to**: Controllers, Actions, Models, Services, Middleware, Providers, etc.
 
 ### Frontend (TypeScript/JavaScript/React)
+
 - **Indentation**: 2 spaces
 - **File types**: `.ts`, `.tsx`, `.js`, `.jsx`
 - **Applies to**: Components, Pages, utilities, configuration files
 
 ### Configuration Files
+
 - **JSON**: 2 spaces
 - **YAML/YML**: 2 spaces
 - **CSS/SCSS**: 2 spaces
@@ -28,6 +32,7 @@ This project uses **2 spaces for indentation** across all backend and frontend c
 ## Examples
 
 ### PHP (Backend)
+
 ```php
 <?php
 
@@ -35,26 +40,27 @@ namespace App\Actions\Auth;
 
 class HandleGoogleOAuthCallback
 {
-  public function __construct(
-    private OAuthTokenService $oauthTokenService
-  ) {
-  }
-
-  public function __invoke(): RedirectResponse
-  {
-    try {
-      $googleUser = Socialite::driver('google')->user();
-      $googleId = $googleUser->getId();
-
-      return redirect()->intended('/dashboard');
-    } catch (\Exception $e) {
-      return redirect('/')->with('error', 'Authentication failed');
+    public function __construct(
+        private OAuthTokenService $oauthTokenService
+    ) {
     }
-  }
+
+    public function __invoke(): RedirectResponse
+    {
+        try {
+            $googleUser = Socialite::driver('google')->user();
+            $googleId = $googleUser->getId();
+
+            return redirect()->intended('/dashboard');
+        } catch (\Exception $e) {
+            return redirect('/')->with('error', 'Authentication failed');
+        }
+    }
 }
 ```
 
 ### TypeScript/React (Frontend)
+
 ```typescript
 export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const handleGoogleLogin = () => {
@@ -76,29 +82,30 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
 ## Configuration Files
 
 ### .editorconfig
-- All PHP files: `indent_size = 2`
+
+- All PHP files: `indent_size = 4`
 - All TypeScript/JavaScript files: `indent_size = 2`
 - YAML files: `indent_size = 2`
 
 ### .prettierrc
+
 - `tabWidth: 2` (already configured)
 
 ## Important Notes
 
 1. **Never use tabs** - Always use spaces
-2. **Never use 4 spaces** - Always use 2 spaces
-3. **Consistent indentation** - Maintain 2 spaces throughout the entire codebase
-4. **Auto-formatting** - Use Prettier for frontend and Laravel Pint for backend
+2. **Consistent indentation** - Maintain 2 spaces throughout the entire codebase except for PHP
+3. **Auto-formatting** - Use Prettier for frontend and Laravel Pint for backend
 
 ## Tools
 
-- **Frontend**: Prettier (configured with `tabWidth: 2`)
-- **Backend**: Laravel Pint (configured in `pint.json` - uses `.editorconfig` for 2-space indentation)
+- **Backend**: Laravel Pint (configured in `pint.json` - uses `.editorconfig` for 4-space indentation)
 - **Editor**: Configure your editor to use 2 spaces for all file types
 
 ## Verification
 
 To verify indentation:
+
 - Check `.editorconfig` file
 - Check `.prettierrc` file
 - Run `npm run format` for frontend
