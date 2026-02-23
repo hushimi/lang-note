@@ -67,7 +67,9 @@ export default [
     },
     settings: {
       react: {
-        version: 'detect',
+        // Use fixed version to avoid eslint-plugin-react calling context.getFilename()
+        // (removed in ESLint 9+ flat config). Match your React dependency (e.g. 19.x).
+        version: '19.0',
       },
     },
   },

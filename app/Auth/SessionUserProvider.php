@@ -19,14 +19,6 @@ final class SessionUserProvider implements UserProvider
         // The identifier is the Google ID stored in session by Auth::login()
         // Verify that the identifier exists in session for security
 
-        // Debug: Log retrieval attempt (temporary)
-        \Log::info('SessionUserProvider::retrieveById', [
-            'identifier' => $identifier,
-            'session_has_google_id' => session()->has('auth.google_id'),
-            'session_google_id' => session('auth.google_id'),
-            'match' => $identifier && session()->has('auth.google_id') && session('auth.google_id') === $identifier,
-        ]);
-
         if ($identifier && session()->has('auth.google_id') && session('auth.google_id') === $identifier) {
             return new SessionUser($identifier);
         }

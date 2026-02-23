@@ -9,9 +9,11 @@
         "format:check": "prettier --check \"resources/js/**/*.{ts,tsx}\" \"resources/css/**/*.css\"",
         "lint": "eslint \"resources/js/**/*.{ts,tsx}\"",
         "lint:fix": "eslint \"resources/js/**/*.{ts,tsx}\" --fix",
-        "type-check": "tsc --noEmit"
+        "type-check": "tsc --noEmit",
+        "checkBeforePR": "./vendor/bin/pint && npm run format && npm run lint"
     },
     "devDependencies": {
+        "@eslint/js": "^9.0.0",
         "@tailwindcss/forms": "^0.5.11",
         "@tailwindcss/vite": "^4.0.0",
         "@types/node": "^25.2.3",
