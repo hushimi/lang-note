@@ -8,15 +8,16 @@ import {
 import { Button } from '@/Components/ui/button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
+import { route } from 'ziggy-js';
 
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
+export default function LoginModal({ isOpen, onClose }: Readonly<LoginModalProps>) {
   const handleGoogleLogin = () => {
-    window.location.href = '/lang-note/auth/google';
+    globalThis.location.href = route('auth.google');
   };
 
   return (

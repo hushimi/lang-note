@@ -2,6 +2,7 @@ import { Link } from '@inertiajs/react';
 import { Button } from '@/Components/ui/button';
 import { PageProps } from '@/types';
 import { useState } from 'react';
+import { route } from 'ziggy-js';
 import LoginModal from '@/Components/LoginModal';
 import LogoutModal from '@/Components/LogoutModal';
 
@@ -9,7 +10,7 @@ interface HeaderProps {
   auth: PageProps['auth'];
 }
 
-export default function Header({ auth }: HeaderProps) {
+export default function Header({ auth }: Readonly<HeaderProps>) {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
@@ -19,7 +20,7 @@ export default function Header({ auth }: HeaderProps) {
         <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
           <nav className='flex h-16 items-center justify-between' aria-label='Main navigation'>
             {/* Logo */}
-            <Link href='/' className='flex items-center space-x-1' aria-label='Lang Note home'>
+            <Link href={route('top')} className='flex items-center space-x-1' aria-label='Lang Note home'>
               <span className='text-brand-primary text-3xl font-bold'>L</span>
               <span className='text-brand-secondary text-3xl font-bold'>n</span>
             </Link>

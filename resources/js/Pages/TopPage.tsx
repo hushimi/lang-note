@@ -30,7 +30,7 @@ export default function TopPage({ auth }: PageProps) {
                 <br />
                 いつでも見返せる
                 <br />
-                何度も復習して自分のものにしよう
+                何度も復習
               </h1>
             </div>
           </div>
@@ -45,46 +45,49 @@ export default function TopPage({ auth }: PageProps) {
             <h2 className='text-neutral text-3xl font-bold'>学習する言語を選択</h2>
           </div>
 
-          <div className='grid grid-cols-1 gap-6 md:grid-cols-3' role='list'>
+          <ul className='m-0 grid list-none grid-cols-1 gap-6 p-0 md:grid-cols-3'>
             {/* English Card */}
-            <Card
-              className='cursor-pointer transition-all hover:scale-105 hover:shadow-xl'
-              role='listitem'
-              tabIndex={0}
-              aria-label='Learn English'
-            >
-              <CardHeader>
-                <CardTitle className='text-neutral text-2xl'>English</CardTitle>
-                <CardDescription className='text-base'>英語</CardDescription>
-              </CardHeader>
-            </Card>
+            <li className='min-w-0'>
+              <Card
+                className='cursor-pointer transition-all hover:scale-105 hover:shadow-xl'
+                tabIndex={0}
+                aria-label='Learn English'
+              >
+                <CardHeader>
+                  <CardTitle className='text-neutral text-2xl'>English</CardTitle>
+                  <CardDescription className='text-base'>英語</CardDescription>
+                </CardHeader>
+              </Card>
+            </li>
 
             {/* Thai Card */}
-            <Card
-              className='cursor-pointer transition-all hover:scale-105 hover:shadow-xl'
-              role='listitem'
-              tabIndex={0}
-              aria-label='Learn Thai'
-            >
-              <CardHeader>
-                <CardTitle className='text-neutral text-2xl'>ภาษาไทย</CardTitle>
-                <CardDescription className='text-base'>タイ語</CardDescription>
-              </CardHeader>
-            </Card>
+            <li className='min-w-0'>
+              <Card
+                className='cursor-pointer transition-all hover:scale-105 hover:shadow-xl'
+                tabIndex={0}
+                aria-label='Learn Thai'
+              >
+                <CardHeader>
+                  <CardTitle className='text-neutral text-2xl'>ภาษาไทย</CardTitle>
+                  <CardDescription className='text-base'>タイ語</CardDescription>
+                </CardHeader>
+              </Card>
+            </li>
 
             {/* Korean Card */}
-            <Card
-              className='cursor-pointer transition-all hover:scale-105 hover:shadow-xl'
-              role='listitem'
-              tabIndex={0}
-              aria-label='Learn Korean'
-            >
-              <CardHeader>
-                <CardTitle className='text-neutral text-2xl'>한국어</CardTitle>
-                <CardDescription className='text-base'>韓国語</CardDescription>
-              </CardHeader>
-            </Card>
-          </div>
+            <li className='min-w-0'>
+              <Card
+                className='cursor-pointer transition-all hover:scale-105 hover:shadow-xl'
+                tabIndex={0}
+                aria-label='Learn Korean'
+              >
+                <CardHeader>
+                  <CardTitle className='text-neutral text-2xl'>한국어</CardTitle>
+                  <CardDescription className='text-base'>韓国語</CardDescription>
+                </CardHeader>
+              </Card>
+            </li>
+          </ul>
         </section>
       </main>
 

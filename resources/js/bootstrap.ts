@@ -8,8 +8,15 @@ declare global {
   }
 }
 
-window.axios = axios;
-window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+type AppGlobals = typeof globalThis & {
+  axios: typeof axios;
+  route: typeof ziggyRoute;
+};
+
+const appGlobal = globalThis as AppGlobals;
+
+appGlobal.axios = axios;
+appGlobal.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 // Make Ziggy route function available globally
-window.route = ziggyRoute;
+appGlobal.route = ziggyRoute;

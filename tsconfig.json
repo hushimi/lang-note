@@ -20,12 +20,17 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    /* Path Mapping */
-    "baseUrl": ".",
+    /* Path Mapping (baseUrl removed in TS 7; use explicit paths) */
     "paths": {
-      "@/*": ["resources/js/*"]
+      "*": ["./*"],
+      "@/*": ["./resources/js/*"]
     }
   },
-  "include": ["resources/js/**/*.ts", "resources/js/**/*.tsx", "resources/js/**/*.d.ts", "resources/js/vite-env.d.ts"],
+  "include": [
+    "resources/js/**/*.ts",
+    "resources/js/**/*.tsx",
+    "resources/js/**/*.d.ts",
+    "resources/js/vite-env.d.ts"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

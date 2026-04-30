@@ -15,7 +15,7 @@ interface LogoutModalProps {
   onClose: () => void;
 }
 
-export default function LogoutModal({ isOpen, onClose }: LogoutModalProps) {
+export default function LogoutModal({ isOpen, onClose }: Readonly<LogoutModalProps>) {
   const handleLogout = () => {
     router.post(
       route('logout'),
